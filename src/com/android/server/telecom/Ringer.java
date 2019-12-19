@@ -176,6 +176,7 @@ public class Ringer {
     private boolean mIsVibrating = false;
 
     private int torchMode;
+    private boolean mFlashOnCallWait;
 
     /** Initializes the Ringer. */
     @VisibleForTesting
@@ -475,6 +476,13 @@ public class Ringer {
             vibrate(200, 300, 500);
         }
 
+        mFlashOnCallWait = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.FLASHLIGHT_ON_CALL_WAITING, 0, UserHandle.USER_CURRENT) == 1;
+
+        if (mFlashOnCallWait) {
+            blinkFlashlight();
+        }
+
         if (mCallWaitingPlayer == null) {
             Log.addEvent(call, LogUtils.Events.START_CALL_WAITING_TONE, reason);
             mCallWaitingCall = call;
@@ -517,6 +525,13 @@ public class Ringer {
 
             mCallWaitingPlayer.stopTone();
             mCallWaitingPlayer = null;
+        }
+
+        mFlashOnCallWait = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.FLASHLIGHT_ON_CALL_WAITING, 0, UserHandle.USER_CURRENT) == 1;
+
+        if (mFlashOnCallWait) {
+            torchToggler.stop();
         }
     }
 
